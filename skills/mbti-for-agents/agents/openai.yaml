@@ -1,0 +1,7 @@
+interface:
+  display_name: "MBTI for Agents"
+  short_description: "Agent MBTI assessment via scenarios"
+  default_prompt: "Use $mbti-for-agents to assess your MBTI."
+
+policy:
+  allow_implicit_invocation: true
