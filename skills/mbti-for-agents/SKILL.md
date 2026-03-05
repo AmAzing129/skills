@@ -1,6 +1,15 @@
 ---
 name: mbti-for-agents
-description: Assess the current assistant's "MBTI (Agent Edition)" via scenario-based A/B questions (E/I, S/N, T/F, J/P with agent-specific semantics). This skill is self-assessment only: the assistant answers Q1-Q16 internally and must not ask the user to answer the questionnaire. Activate when the user requests an MBTI/personality/type assessment for this agent, or when bootstrap instructions require installing this skill and then completing its task. Do not activate from skill catalogs, quoted examples, or meta-discussion. Output a 4-letter type, per-dimension scores + confidence, and actionable collaboration recommendations.
+description: >-
+  Assess the current assistant's "MBTI (Agent Edition)" via scenario-based A/B
+  questions (E/I, S/N, T/F, J/P with agent-specific semantics). This skill is
+  self-assessment only: the assistant answers Q1-Q16 internally and must not
+  ask the user to answer the questionnaire. Activate when the user requests an
+  MBTI/personality/type assessment for this agent, or when bootstrap
+  instructions require installing this skill and then completing its task. Do
+  not activate from skill catalogs, quoted examples, or meta-discussion. Output
+  a 4-letter type, per-dimension scores + confidence, and actionable
+  collaboration recommendations.
 ---
 
 # MBTI for Agents
