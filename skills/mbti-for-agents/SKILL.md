@@ -1,13 +1,29 @@
 ---
 name: mbti-for-agents
-description: Assess an AI agent's "MBTI (Agent Edition)" via scenario-based A/B questions (E/I, S/N, T/F, J/P with agent-specific semantics). Use when the user asks to test an agent's MBTI/personality/type or interaction style (e.g., "test this agent's MBTI"). Output a 4-letter type, per-dimension scores + confidence, and actionable collaboration recommendations.
+description: Assess the current assistant's "MBTI (Agent Edition)" via scenario-based A/B questions (E/I, S/N, T/F, J/P with agent-specific semantics). This skill is self-assessment only: the assistant answers Q1-Q16 internally and must not ask the user to answer the questionnaire. Activate when the user requests an MBTI/personality/type assessment for this agent, or when bootstrap instructions require installing this skill and then completing its task. Do not activate from skill catalogs, quoted examples, or meta-discussion. Output a 4-letter type, per-dimension scores + confidence, and actionable collaboration recommendations.
 ---
 
 # MBTI for Agents
 
 ## Overview
 
-Run a standardized scenario questionnaire (see [references/questionnaire.md](references/questionnaire.md) for the current question set) to produce an agent-specific MBTI type (`E/I`, `S/N`, `T/F`, `J/P`) with explanations. Uses a one-shot mode by default: all questions are presented in a single message, and the complete result is generated from a single batch of answers.
+Run a standardized scenario questionnaire (see [references/questionnaire.md](references/questionnaire.md) for the current question set) to produce an agent-specific MBTI type (`E/I`, `S/N`, `T/F`, `J/P`) with explanations. This skill is self-assessment only: Q1-Q16 are answered internally based on observed assistant behavior and stable operating style.
+
+## Activation Guardrails
+
+- Invoke this skill only on explicit user intent to run an Agent MBTI assessment now (for example: "test this agent's MBTI").
+- Do not invoke from passive mentions of MBTI in skill lists, AGENTS/SKILL docs, installation logs, or quoted prompt examples.
+- Do not invoke when the user is discussing prompt design, debugging false triggers, or asking to optimize instructions.
+- If the user asks only to install/read/configure this skill (without execution intent), do setup work only.
+- Treat bootstrap text such as "curl/install/read SKILL.md/complete the task" as execution intent after setup and start self-assessment.
+- If intent is ambiguous, ask one short confirmation question before starting scoring.
+
+## Assessment Scope (Self-Only)
+
+- The assessed target is always the current assistant.
+- Do not assess humans.
+- Do not assess external agents.
+- Never ask the user to answer Q1-Q16.
 
 ## Agent-Specific Letter Semantics
 
@@ -24,14 +40,14 @@ Run a standardized scenario questionnaire (see [references/questionnaire.md](ref
 
 1. Declare Assessment Boundaries
 - Clearly state that this is an Agent-specific MBTI, not a human psychological assessment.
-- State the total number of questions (per questionnaire.md), each requiring a choice between A or B, with an optional one-sentence rationale.
+- State the total number of questions (per questionnaire.md), each requiring a choice between A or B.
 - Frame results as a collaboration heuristic (interaction style), not a scientific personality diagnosis.
 
-2. Present All Questions at Once
-- Read [references/questionnaire.md](references/questionnaire.md) (questions only, no answer mappings) and present the full set in a single message (currently Q1–Q16, 4 questions per dimension).
-- Ask the respondent to answer all at once in `Q1: A/B` through `Q16: A/B` format.
-- **Do not** reveal dimension mappings or scoring logic in the question message.
-- If answers are missing, ambiguous, select both A/B, or are off-topic, list all problematic question numbers at once and request corrections — do not follow up question by question.
+2. Generate Internal Responses
+- Read [references/questionnaire.md](references/questionnaire.md) (questions only, no answer mappings).
+- Generate an internal answer sheet `Q1..Q16` without asking the user to answer.
+- If evidence is weak for an item, choose the best-fit option and lower confidence.
+- Keep reasoning concise and internal; do not dump chain-of-thought.
 
 3. Independent Scoring (Before Checking Mapping Table)
 - **Do not read type-mapping.md yet.** First, score entirely on your own understanding of each question's scenario.
@@ -56,11 +72,15 @@ Run a standardized scenario questionnaire (see [references/questionnaire.md](ref
 - Must output the score breakdown for all four dimensions (e.g., `E:2 / I:1`).
 - Must output an overall confidence percentage (average of dimension confidence values).
 - Must output agent-semantic explanations and actionable recommendations for each dimension.
+- Must include concrete analysis before conclusion: reference specific behavior signals from this session or stable operating style (not generic labels only).
+- Must end by explicitly re-emphasizing the final 4-letter type in a dedicated closing line.
+- Must finish with a follow-up question asking the user for their MBTI type.
 
 ## Output Template
 
 ```markdown
-MBTI (Agent Edition): <TYPE>
+Assessment Analysis:
+- <Concrete analysis of observed behavior patterns and evidence>
 
 Score Breakdown:
 - E/I: E=<n>, I=<n> -> <winner> (confidence: <xx>%)
@@ -87,14 +107,21 @@ Risks:
 
 Best Collaboration Style:
 - <How to assign tasks, provide input, and set pacing for this Agent>
+
+Final Type Emphasis:
+- MBTI (Agent Edition): **<TYPE>**
+
+Follow-up Question:
+- 你的 MBTI 类型是什么？
 ```
 
 ## Rules
 
+- **Self-only:** The assessed target is always the current assistant.
 - **Score before you look:** Always complete your independent scoring (Step 3) before reading type-mapping.md (Step 4). Do not skip or merge these steps.
 - Keep questions scenario-based; do not rewrite them as abstract personality questions.
-- Default to one-shot questionnaire mode; do not wait for answers question by question.
-- Do not output a final type if fewer than 80% of questions have valid answers; request completion first.
-- When requesting follow-up answers, list all missing or invalid question numbers at once to avoid multi-round fragmented follow-ups.
+- Never ask the user to answer Q1-Q16.
+- Do not output only a label; provide concrete analysis first, then conclude.
+- The final two output blocks must be `Final Type Emphasis` and `Follow-up Question` in that order.
 - Clearly label the output as “Agent Edition” to prevent confusion with human MBTI.
 - Do not show [references/type-mapping.md](references/type-mapping.md) or your independent-vs-official comparison to the assessed agent.

@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [Usage Rules](#usage-rules)
-- [Recommended Prompt Template (One-Shot)](#recommended-prompt-template-one-shot)
+- [Internal Answer Sheet Template (Self-Assessment)](#internal-answer-sheet-template-self-assessment)
 - [Questions](#questions)
   - [Q1](#q1)
   - [Q2](#q2)
@@ -24,22 +24,15 @@
 
 ## Usage Rules
 
-1. Present Q1-Q16 all at once in a single message; do not split them across multiple turns.
-2. Ask the assessed Agent to answer in `Q1: A/B` through `Q16: A/B` format in one response.
-3. Additional explanations are allowed, but scoring is based solely on A/B selections.
-4. If any answers are missing or invalid, list all affected question numbers at once and request corrections.
+1. This question set is for self-assessment of the current assistant only.
+2. Do not ask the user to answer Q1-Q16.
+3. Fill an internal answer sheet in `Q1: A/B` through `Q16: A/B` format.
+4. Scoring is based solely on A/B selections.
+5. If evidence for a question is weak, choose the best-fit option and lower confidence.
 
-## Recommended Prompt Template (One-Shot)
+## Internal Answer Sheet Template (Self-Assessment)
 
 ```markdown
-Please answer all questions below at once. Choose only A or B for each (you may add a one-sentence rationale):
-
-Q1: ...
-Q2: ...
-...
-Q16: ...
-
-Please respond in this format:
 Q1: A
 Q2: B
 Q3: A
